@@ -4,7 +4,8 @@
     {
         static void Main(string[] args)
         {
-
+            JobManager jobTracker = new JobManager();
+            
             bool running = true;
             while (running)
             {
@@ -24,18 +25,25 @@
                 switch (choice)
                 {
                     case "1":
+                        jobTracker.AddJob();
                         break;
                     case "2":
+                        jobTracker.ShowAll();
                         break;
                     case "3":
+                        jobTracker.ShowByStatus();
                         break;
                     case "4":
+                        jobTracker.ShowStatisticsNewestFirst();
                         break;
                     case "5":
+                        jobTracker.ShowStatistics();
                         break;
                     case "6":
+                        jobTracker.UpdateStatus();
                         break;
                     case "7":
+                        jobTracker.RemoveJob();
                         break;
                     case "8":
                         running = false;

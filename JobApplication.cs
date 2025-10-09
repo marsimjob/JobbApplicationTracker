@@ -40,7 +40,7 @@ namespace JobbApplicationTracker
 
         public string GetSummary()
         {
-            return $"{CompanyName}: {PositionTitle}, Status: {Status}, Applied: {ApplicationDate:d}, Salary: {SalaryExpectation}";
+            return $"{CompanyName}: {PositionTitle}, Status: {Status}, Applied: {ApplicationDate:d}, Salary: {SalaryExpectation}kr";
         }
 
     }
