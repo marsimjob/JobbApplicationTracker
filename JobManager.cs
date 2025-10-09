@@ -11,7 +11,7 @@ namespace JobbApplicationTracker
 
         public List<JobApplication> jobApplications;
 
-        public JobManager() 
+        public JobManager()
         {
             // Mock data to begin the application 
             jobApplications = new List<JobApplication> {
@@ -19,12 +19,13 @@ namespace JobbApplicationTracker
             new JobApplication("Company B", "Data Analyst", Status.Interview, new DateTime(2025, 9, 20), new DateTime(2025, 10, 5), 55000),
             new JobApplication("Company C", "Product Manager", Status.Offer, new DateTime(2025, 8, 30), new DateTime(2025, 9, 10), 70000),
             new JobApplication("Company D", "UX Designer", Status.Reject, new DateTime(2025, 7, 25), null, 50000),
-            new JobApplication("Company E", "HR Specialist", Status.Applied, new DateTime(2025, 9, 10), null, 45000),
+            new JobApplication("Company E", "HR Specialist", Status.Reject, new DateTime(2025, 9, 10), null, 45000),
             new JobApplication("Company F", "Marketing Coordinator", Status.Interview, new DateTime(2025, 9, 18), new DateTime(2025, 10, 3), 48000)
             };
         }
         public void AddJob()
         {
+            Console.Clear();
             Console.WriteLine("You will now submit a job application to your job application list.");
 
             // NAME:
@@ -104,7 +105,11 @@ namespace JobbApplicationTracker
         }
         public void RemoveJob()
         {
-            Console.WriteLine($"Would you like to 1) Remove one particular job application OR 2) Remove All Rejected applications?");
+            Console.Clear();
+            Console.WriteLine($"Would you like to " +
+                $"\n1) Remove one particular job application " +
+                $"\n2) Remove All Rejected applications?" +
+                $"\n2) Remove All job applications?");
             Console.Write("Please enter: ");
             string answer = Console.ReadLine();
             if (answer != null)
@@ -127,7 +132,6 @@ namespace JobbApplicationTracker
                     if (job == null)
                     {
                         Console.WriteLine("No entry in your job lists is found that matches your input. Try again in another session");
-                        return;
                     }
 
                     // Remove job from job applications
@@ -137,30 +141,25 @@ namespace JobbApplicationTracker
 
                 else if (answer == "2")
                 {
-                    // Used LINQ to filter out the entires in the list marked Status.Reject
-                    // Filters out the status-matching jobs using LINQ: 
-                    IOrderedEnumerable<JobApplication> jobs = jobApplications // Get a list of filtered object based on jobApplications
-                        .Where(job => job.Status == Status.Reject) // Where. picks only if matching status
-                        .OrderBy(job => job.ApplicationDate);  // Sorts by time (earliest application first)
-
-                    // Use the new filtered list and remove all of them
-                    foreach (JobApplication jobApplication in jobs) 
-
-                        {
-                        jobApplications.Remove(jobApplication);
-                        Console.WriteLine($"Jobb application for {jobApplication.PositionTitle} at {jobApplication.CompanyName} has successfully been removed from your list!");
-                        }
-                    return;
+                    // Remove all rejected applications with LINQ
+                    int removedCount = jobApplications.RemoveAll(job => job.Status == Status.Reject);
+                    Console.WriteLine($"{removedCount} rejected job applications have been removed.");
+                }
+                else if(answer == "3")
+                {
+                    // Remove all jobs
+                    jobApplications.Clear();
+                    Console.WriteLine($"All your job applications have been successfully deleted.");
                 }
                 else
                 {
-                    Console.WriteLine("Invalid answer, booting back to main");
-                    return;
+                    Console.WriteLine("Invalid answer, booting back to main.");
                 }
             }
         }
         public void UpdateStatus()
         {
+            Console.Clear();
             Console.WriteLine("Which job application would you like to change the status for?");
             Console.Write("Enter the company name: ");
             string companyInput = Console.ReadLine();
@@ -181,7 +180,7 @@ namespace JobbApplicationTracker
             else
             {
                 Console.WriteLine($"Current status: {job.Status}");
-                Console.Write("Enter the new status (Applied, Interviewing, Offer, Rejected): ");
+                Console.Write("Enter the new status (Applied, Interview, Offer, Reject): ");
                 string statusInput = Console.ReadLine();
 
                 Status newStatus;
@@ -189,7 +188,7 @@ namespace JobbApplicationTracker
                        || !Enum.IsDefined(typeof(Status), newStatus))
                 {
                     Console.Write("The status you have entered is unavailable. Please enter one of the following:" +
-                        " Applied, Interviewing, Offer, or Rejected: ");
+                        " Applied, Interview, Offer, or Reject: ");
                     statusInput = Console.ReadLine();
                 }
 
@@ -201,19 +200,21 @@ namespace JobbApplicationTracker
 
         public void ShowAll()
         {
-            if(jobApplications.Count <= 0)
+            Console.Clear();
+            if (jobApplications.Count <= 0)
             {
                 Console.WriteLine("The are a no available job applications!");
             }
             foreach (JobApplication application in jobApplications)
             {
-               Console.WriteLine(application.GetSummary());
+                Console.WriteLine(application.GetSummary());
             }
         }
 
         public void ShowByStatus()
         {
-            Console.Write("Enter the new status to search by (Applied, Interviewing, Offer, Rejected): ");
+            Console.Clear();
+            Console.Write("Enter the new status to search by (Applied, Interview, Offer, Reject): ");
             string statusInput = Console.ReadLine();
 
             Status newStatus;
@@ -221,7 +222,7 @@ namespace JobbApplicationTracker
                    || !Enum.IsDefined(typeof(Status), newStatus))
             {
                 Console.Write("The status you have entered is unavailable. Please enter one of the following:" +
-                    " Applied, Interviewing, Offer, or Rejected: ");
+                    " Applied, Interview, Offer, or Reject: ");
                 statusInput = Console.ReadLine();
             }
 
@@ -239,6 +240,7 @@ namespace JobbApplicationTracker
 
         public void ShowStatistics()
         {
+            Console.Clear();
             if (jobApplications.Count <= 0)
             {
                 Console.WriteLine("You currently have no job applications!");
@@ -272,17 +274,25 @@ namespace JobbApplicationTracker
             }
         }
 
-        public void ShowStatisticsNewestFirst()
+        public void ShowAllInNewestOrder()
         {
-            ShowStatistics();
+            Console.Clear();
+            if (jobApplications.Count <= 0)
+            {
+                Console.WriteLine("There are no available job applications!");
+                return;
+            }
 
-            // SHOW NEWEST FIRST:
-            var newest = jobApplications
-                .OrderBy(j => j.ApplicationDate)
-                .Last();
+            // Sort job applications by ApplicationDate in descending order as a list
+            var newestSorted = jobApplications
+                .OrderByDescending(j => j.ApplicationDate)
+                .ToList();
 
-            Console.WriteLine("Newest application: " + newest.GetSummary());
+            // Display each job application
+            foreach (JobApplication application in newestSorted)
+            {
+                Console.WriteLine(application.GetSummary());
+            }
         }
-
     }
 }

@@ -9,6 +9,7 @@
             bool running = true;
             while (running)
             {
+                Console.WriteLine();
                 Console.WriteLine("Welcome to the JOB APPLICATION service. What do you wish to do today?");
                 Console.WriteLine("1) Add a new job application");
                 Console.WriteLine("2) Show all job applications");
@@ -34,7 +35,7 @@
                         jobTracker.ShowByStatus();
                         break;
                     case "4":
-                        jobTracker.ShowStatisticsNewestFirst();
+                        jobTracker.ShowAllInNewestOrder();
                         break;
                     case "5":
                         jobTracker.ShowStatistics();
