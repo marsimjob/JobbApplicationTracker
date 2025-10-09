@@ -22,14 +22,26 @@ namespace JobbApplicationTracker
         public DateTime? ResponseDate;
         public int SalaryExpectation;
 
+        public JobApplication(string companyName, string positionTitle, Status status, DateTime applicationDate, DateTime? responseDate, int salaryExpectation)
+        {
+            CompanyName = companyName;
+            PositionTitle = positionTitle;
+            Status = status;
+            ApplicationDate = applicationDate;
+            ResponseDate = responseDate;
+            SalaryExpectation = salaryExpectation;
+        }
 
-        public void GetDaysSinceApplied()
+        public int GetDaysSinceApplied()
         {
-            // TODO::  Compare time with now
+            // Return int amount of days
+            return (DateTime.Now - ApplicationDate).Days;
         }
-        public void GetSummary()
+
+        public string GetSummary()
         {
-            // TODO:: Get all info from this job application neatly displayed
+            return $"{CompanyName}: {PositionTitle}, Status: {Status}, Applied: {ApplicationDate:d}, Salary: {SalaryExpectation}";
         }
+
     }
 }
