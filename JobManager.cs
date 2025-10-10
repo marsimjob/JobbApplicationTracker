@@ -9,10 +9,23 @@ namespace JobbApplicationTracker
     internal class JobManager
     {
 
-        public List<JobApplication> jobApplications = new List<JobApplication>();
+        public List<JobApplication> jobApplications;
 
+        public JobManager()
+        {
+            // Mock data to begin the application 
+            jobApplications = new List<JobApplication> {
+            new JobApplication("Company A", "Software Engineer", Status.Applied, new DateTime(2025, 9, 15), null, 60000),
+            new JobApplication("Company B", "Data Analyst", Status.Interview, new DateTime(2025, 9, 20), new DateTime(2025, 10, 5), 55000),
+            new JobApplication("Company C", "Product Manager", Status.Offer, new DateTime(2025, 8, 30), new DateTime(2025, 9, 10), 70000),
+            new JobApplication("Company D", "UX Designer", Status.Reject, new DateTime(2025, 7, 25), null, 50000),
+            new JobApplication("Company E", "HR Specialist", Status.Reject, new DateTime(2025, 9, 10), null, 45000),
+            new JobApplication("Company F", "Marketing Coordinator", Status.Interview, new DateTime(2025, 9, 18), new DateTime(2025, 10, 3), 48000)
+            };
+        }
         public void AddJob()
         {
+            Console.Clear();
             Console.WriteLine("You will now submit a job application to your job application list.");
 
             // NAME:
@@ -55,12 +68,12 @@ namespace JobbApplicationTracker
             }
 
             // SALARAY
-            Console.Write("What is your salary expectation (integer, e.g. 50000)? ");
+            Console.Write("What is your salary expectation in kr (whole numbers): ");
             string salaryInput = Console.ReadLine();
             int salaryExpectation;
             while (!int.TryParse(salaryInput, out salaryExpectation))
             {
-                Console.Write("Invalid number. Please enter an integer salary expectancy: ");
+                Console.Write("Please enter an whole number in kr: ");
                 salaryInput = Console.ReadLine();
             }
 
@@ -90,9 +103,63 @@ namespace JobbApplicationTracker
             }
             Console.WriteLine($"Returning to main menu.");
         }
+        public void RemoveJob()
+        {
+            Console.Clear();
+            Console.WriteLine($"Would you like to " +
+                $"\n1) Remove one particular job application " +
+                $"\n2) Remove All Rejected applications?" +
+                $"\n2) Remove All job applications?");
+            Console.Write("Please enter: ");
+            string answer = Console.ReadLine();
+            if (answer != null)
+            {
+                if (answer == "1")
+                {
+                    Console.WriteLine("We will now look for the job application you wish to delete.");
+                    Console.Write("Enter the company name: ");
+                    string companyInput = Console.ReadLine();
 
+                    Console.Write("Enter the position title: ");
+                    string titleInput = Console.ReadLine();
+
+                    // Try to find matching job with LINQ, matching strings with user input, .First will just give the first best match
+                    JobApplication job = jobApplications
+                        .First(j => j.CompanyName.Equals(companyInput, StringComparison.OrdinalIgnoreCase)
+                                          && j.PositionTitle.Equals(titleInput, StringComparison.OrdinalIgnoreCase));
+
+                    // If no job found I will tell the user here
+                    if (job == null)
+                    {
+                        Console.WriteLine("No entry in your job lists is found that matches your input. Try again in another session");
+                    }
+
+                    // Remove job from job applications
+                    jobApplications.Remove(job);
+                    Console.WriteLine($"Jobb application for {job.PositionTitle} at {job.CompanyName} has successfully been removed from your list!");
+                }
+
+                else if (answer == "2")
+                {
+                    // Remove all rejected applications with LINQ
+                    int removedCount = jobApplications.RemoveAll(job => job.Status == Status.Reject);
+                    Console.WriteLine($"{removedCount} rejected job applications have been removed.");
+                }
+                else if(answer == "3")
+                {
+                    // Remove all jobs
+                    jobApplications.Clear();
+                    Console.WriteLine($"All your job applications have been successfully deleted.");
+                }
+                else
+                {
+                    Console.WriteLine("Invalid answer, booting back to main.");
+                }
+            }
+        }
         public void UpdateStatus()
         {
+            Console.Clear();
             Console.WriteLine("Which job application would you like to change the status for?");
             Console.Write("Enter the company name: ");
             string companyInput = Console.ReadLine();
@@ -113,7 +180,7 @@ namespace JobbApplicationTracker
             else
             {
                 Console.WriteLine($"Current status: {job.Status}");
-                Console.Write("Enter the new status (Applied, Interviewing, Offer, Rejected): ");
+                Console.Write("Enter the new status (Applied, Interview, Offer, Reject): ");
                 string statusInput = Console.ReadLine();
 
                 Status newStatus;
@@ -121,7 +188,7 @@ namespace JobbApplicationTracker
                        || !Enum.IsDefined(typeof(Status), newStatus))
                 {
                     Console.Write("The status you have entered is unavailable. Please enter one of the following:" +
-                        " Applied, Interviewing, Offer, or Rejected: ");
+                        " Applied, Interview, Offer, or Reject: ");
                     statusInput = Console.ReadLine();
                 }
 
@@ -133,17 +200,35 @@ namespace JobbApplicationTracker
 
         public void ShowAll()
         {
+            Console.Clear();
+            if (jobApplications.Count <= 0)
+            {
+                Console.WriteLine("The are a no available job applications!");
+            }
             foreach (JobApplication application in jobApplications)
             {
-                application.GetSummary();
+                Console.WriteLine(application.GetSummary());
             }
         }
 
-        public void ShowByStatus(Status statusToShow)
+        public void ShowByStatus()
         {
+            Console.Clear();
+            Console.Write("Enter the new status to search by (Applied, Interview, Offer, Reject): ");
+            string statusInput = Console.ReadLine();
+
+            Status newStatus;
+            while (!Enum.TryParse<Status>(statusInput, true, out newStatus)
+                   || !Enum.IsDefined(typeof(Status), newStatus))
+            {
+                Console.Write("The status you have entered is unavailable. Please enter one of the following:" +
+                    " Applied, Interview, Offer, or Reject: ");
+                statusInput = Console.ReadLine();
+            }
+
             // Filters out the status-matching jobs using LINQ:
             IOrderedEnumerable<JobApplication> filteredJobs = jobApplications // Get a list of filtered object based on jobApplications
-                .Where(job => job.Status == statusToShow) // Where. picks only if matching status
+                .Where(job => job.Status == newStatus) // Where. picks only if matching status
                 .OrderBy(job => job.ApplicationDate);  // Sorts by time (earliest application first)
 
             // Print out info via JobApplication's GetSummary() function.
@@ -155,6 +240,7 @@ namespace JobbApplicationTracker
 
         public void ShowStatistics()
         {
+            Console.Clear();
             if (jobApplications.Count <= 0)
             {
                 Console.WriteLine("You currently have no job applications!");
@@ -186,14 +272,27 @@ namespace JobbApplicationTracker
             {
                 Console.WriteLine($"{group.Status}: {group.Count}");
             }
-
-            // SHOW NEWEST FIRST:
-            var newest = jobApplications
-                .OrderBy(j => j.ApplicationDate)
-                .Last();
-
-            Console.WriteLine("Newest application: " + newest.GetSummary());
         }
 
+        public void ShowAllInNewestOrder()
+        {
+            Console.Clear();
+            if (jobApplications.Count <= 0)
+            {
+                Console.WriteLine("There are no available job applications!");
+                return;
+            }
+
+            // Sort job applications by ApplicationDate in descending order as a list
+            var newestSorted = jobApplications
+                .OrderByDescending(j => j.ApplicationDate)
+                .ToList();
+
+            // Display each job application
+            foreach (JobApplication application in newestSorted)
+            {
+                Console.WriteLine(application.GetSummary());
+            }
+        }
     }
 }

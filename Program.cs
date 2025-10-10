@@ -4,10 +4,12 @@
     {
         static void Main(string[] args)
         {
-
+            JobManager jobTracker = new JobManager();
+            
             bool running = true;
             while (running)
             {
+                Console.WriteLine();
                 Console.WriteLine("Welcome to the JOB APPLICATION service. What do you wish to do today?");
                 Console.WriteLine("1) Add a new job application");
                 Console.WriteLine("2) Show all job applications");
@@ -24,18 +26,25 @@
                 switch (choice)
                 {
                     case "1":
+                        jobTracker.AddJob();
                         break;
                     case "2":
+                        jobTracker.ShowAll();
                         break;
                     case "3":
+                        jobTracker.ShowByStatus();
                         break;
                     case "4":
+                        jobTracker.ShowAllInNewestOrder();
                         break;
                     case "5":
+                        jobTracker.ShowStatistics();
                         break;
                     case "6":
+                        jobTracker.UpdateStatus();
                         break;
                     case "7":
+                        jobTracker.RemoveJob();
                         break;
                     case "8":
                         running = false;
