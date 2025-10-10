@@ -10,52 +10,40 @@
             while (running)
             {
                 Console.WriteLine();
-                Console.WriteLine("Welcome to the JOB APPLICATION service. What do you wish to do today?");
-                Console.WriteLine("1) Add a new job application");
-                Console.WriteLine("2) Show all job applications");
-                Console.WriteLine("3) Filter job applications by status");
-                Console.WriteLine("4) Sort jobb applications by date");
-                Console.WriteLine("5) Show statistics");
-                Console.WriteLine("6) Update status of an job application");
-                Console.WriteLine("7) Delete an application");
-                Console.WriteLine("8) Exit program");
-                Console.Write("Enter a choice: ");
-                string choice = Console.ReadLine();
 
-                Console.WriteLine();
-                switch (choice)
+                int selected = Helper.Menu("Welcome to the JOB APPLICATION service. What do you wish to do today?", Helper.menuOptions);
+
+                switch (selected)
                 {
-                    case "1":
-                        jobTracker.AddJob();
+                    case 0: 
+                        jobTracker.AddJob(); 
                         break;
-                    case "2":
-                        jobTracker.ShowAll();
+                    case 1: 
+                        jobTracker.ShowAll(); 
                         break;
-                    case "3":
-                        jobTracker.ShowByStatus();
+                    case 2: 
+                        jobTracker.ShowByStatus(); 
                         break;
-                    case "4":
-                        jobTracker.ShowAllInNewestOrder();
+                    case 3: 
+                        jobTracker.ShowAllInNewestOrder(); 
                         break;
-                    case "5":
-                        jobTracker.ShowStatistics();
+                    case 4: 
+                        jobTracker.ShowStatistics(); 
                         break;
-                    case "6":
-                        jobTracker.UpdateStatus();
+                    case 5: 
+                        jobTracker.UpdateStatus(); 
                         break;
-                    case "7":
-                        jobTracker.RemoveJob();
+                    case 6: 
+                        jobTracker.RemoveJob(); 
                         break;
-                    case "8":
+                    case 7: 
                         running = false;
-                        break;
-                    default:
-                        Console.WriteLine("Your choice is not valid, try again.");
                         break;
                 }
             }
 
-            Console.WriteLine("Completing program. Thank you for using our services.");
+            Helper.WriteOut("Completing program. Thank you for using our services.");
+            Console.ReadLine();
         }
     }
 }

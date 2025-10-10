@@ -26,7 +26,7 @@ namespace JobbApplicationTracker
         public void AddJob()
         {
             Console.Clear();
-            Console.WriteLine("You will now submit a job application to your job application list.");
+            Helper.WriteOut("You will now submit a job application to your job application list.");
 
             // NAME:
             Console.Write("What is the company called? ");
@@ -94,36 +94,31 @@ namespace JobbApplicationTracker
 
             if (exists)
             {
-                Console.WriteLine($"An application at this company for this application already exists!");
+                Helper.WriteOut($"An application at this company for this application already exists!");
             }
             else
             {
                 jobApplications.Add(newJob);
-                Console.WriteLine("Your job application was a sucessfully completed!");
+                Helper.WriteOut("Your job application was a sucessfully completed!");
             }
-            Console.WriteLine($"Returning to main menu.");
+            Helper.CallReturnToMenu();
         }
         public void RemoveJob()
         {
             Console.Clear();
-            Console.WriteLine($"Would you like to " +
-                $"\n1) Remove one particular job application " +
-                $"\n2) Remove All Rejected applications?" +
-                $"\n2) Remove All job applications?");
-            Console.Write("Please enter: ");
-            string answer = Console.ReadLine();
-            if (answer != null)
+            int rmvanswer = Helper.Menu("What sort of removal would you you like to commit?", Helper.removeOptions);
+            if (rmvanswer != null)
             {
-                if (answer == "1")
+                if (rmvanswer == 0)
                 {
-                    Console.WriteLine("We will now look for the job application you wish to delete.");
+                    Helper.WriteOut("We will now look for the job application you wish to delete.");
                     Console.Write("Enter the company name: ");
                     string companyInput = Console.ReadLine();
 
                     Console.Write("Enter the position title: ");
                     string titleInput = Console.ReadLine();
 
-                    // Try to find matching job with LINQ, matching strings with user input, .First will just give the first best match
+                    // Try to find matching job with LINQ, matching strings with user input, .FirstOrDefault will just give the first best match
                     JobApplication job = jobApplications
                         .First(j => j.CompanyName.Equals(companyInput, StringComparison.OrdinalIgnoreCase)
                                           && j.PositionTitle.Equals(titleInput, StringComparison.OrdinalIgnoreCase));
@@ -131,59 +126,63 @@ namespace JobbApplicationTracker
                     // If no job found I will tell the user here
                     if (job == null)
                     {
-                        Console.WriteLine("No entry in your job lists is found that matches your input. Try again in another session");
+                        Helper.WriteOut("No entry in your job lists is found that matches your input. Try again in another session");
+                    }
+                    else
+                    {
+                        // Remove job from job applications
+                        jobApplications.Remove(job);
+                        Helper.WriteOut($"Jobb application for {job.PositionTitle} at {job.CompanyName} has successfully been removed from your list!");
+                    }
                     }
 
-                    // Remove job from job applications
-                    jobApplications.Remove(job);
-                    Console.WriteLine($"Jobb application for {job.PositionTitle} at {job.CompanyName} has successfully been removed from your list!");
-                }
-
-                else if (answer == "2")
+                else if (rmvanswer == 1)
                 {
                     // Remove all rejected applications with LINQ
                     int removedCount = jobApplications.RemoveAll(job => job.Status == Status.Reject);
-                    Console.WriteLine($"{removedCount} rejected job applications have been removed.");
+                    Helper.WriteOut($"{removedCount} rejected job applications have been removed.");
                 }
-                else if(answer == "3")
+                else if(rmvanswer == 2)
                 {
                     // Remove all jobs
                     jobApplications.Clear();
-                    Console.WriteLine($"All your job applications have been successfully deleted.");
+                    Helper.WriteOut($"All your job applications have been successfully deleted.");
                 }
                 else
                 {
-                    Console.WriteLine("Invalid answer, booting back to main.");
+                    Helper.WriteOut("Booting back to main.");
                 }
             }
+            Helper.CallReturnToMenu();
         }
         public void UpdateStatus()
         {
             Console.Clear();
-            Console.WriteLine("Which job application would you like to change the status for?");
+            Helper.WriteOut("Which job application would you like to change the status for?");
             Console.Write("Enter the company name: ");
             string companyInput = Console.ReadLine();
 
             Console.Write("Enter the position title: ");
             string titleInput = Console.ReadLine();
 
-            // Try to find matching job with LINQ, matching strings with user input, .First will just give the first best match
+            // Try to find matching job with LINQ, matching strings with user input, .FirstOrDefault will just give the first best match or default if nothing
             JobApplication job = jobApplications
-                .First(j => j.CompanyName.Equals(companyInput, StringComparison.OrdinalIgnoreCase)
+                .FirstOrDefault(j => j.CompanyName.Equals(companyInput, StringComparison.OrdinalIgnoreCase)
                                   && j.PositionTitle.Equals(titleInput, StringComparison.OrdinalIgnoreCase));
 
             // If no job found I will tell the user here
             if (job == null)
             {
-                Console.WriteLine("No matching job application found for that company and position.");
+                Helper.WriteOut("No matching job application found for that company and position.");
             }
             else
             {
-                Console.WriteLine($"Current status: {job.Status}");
+                Helper.WriteOut($"Current status: {job.Status}");
                 Console.Write("Enter the new status (Applied, Interview, Offer, Reject): ");
                 string statusInput = Console.ReadLine();
 
                 Status newStatus;
+
                 while (!Enum.TryParse<Status>(statusInput, true, out newStatus)
                        || !Enum.IsDefined(typeof(Status), newStatus))
                 {
@@ -193,8 +192,9 @@ namespace JobbApplicationTracker
                 }
 
                 job.Status = newStatus;
-                Console.WriteLine($"Status updated. {job.CompanyName} — {job.PositionTitle} is now {job.Status}.");
+                Helper.WriteOut($"Status updated. {job.CompanyName} — {job.PositionTitle} is now {job.Status}.");
             }
+            Helper.CallReturnToMenu();
         }
 
 
@@ -203,12 +203,13 @@ namespace JobbApplicationTracker
             Console.Clear();
             if (jobApplications.Count <= 0)
             {
-                Console.WriteLine("The are a no available job applications!");
+                Helper.WriteOut("The are a no available job applications!");
             }
             foreach (JobApplication application in jobApplications)
             {
-                Console.WriteLine(application.GetSummary());
+                Helper.WriteOut(application.GetSummary());
             }
+            Helper.CallReturnToMenu();
         }
 
         public void ShowByStatus()
@@ -218,6 +219,7 @@ namespace JobbApplicationTracker
             string statusInput = Console.ReadLine();
 
             Status newStatus;
+
             while (!Enum.TryParse<Status>(statusInput, true, out newStatus)
                    || !Enum.IsDefined(typeof(Status), newStatus))
             {
@@ -234,8 +236,9 @@ namespace JobbApplicationTracker
             // Print out info via JobApplication's GetSummary() function.
             foreach (var job in filteredJobs)
             {
-                Console.WriteLine(job.GetSummary());
+                Helper.WriteOut(job.GetSummary());
             }
+            Helper.CallReturnToMenu();
         }
 
         public void ShowStatistics()
@@ -243,7 +246,7 @@ namespace JobbApplicationTracker
             Console.Clear();
             if (jobApplications.Count <= 0)
             {
-                Console.WriteLine("You currently have no job applications!");
+                Helper.WriteOut("You currently have no job applications!");
                 return; // Used return to break out of ShowStatistics() instead of if else (test).
             }
 
@@ -264,14 +267,15 @@ namespace JobbApplicationTracker
 
             // DISPLAY INFORMATION:
             // JOB TOTAL:
-            Console.WriteLine($"Job Count: {totalJobs}");
+            Helper.WriteOut($"Job Count: {totalJobs}");
             // AVARAGE SALARY FOR ALL (2 decimal points):
-            Console.WriteLine($"Average salary expectation: {avrgSalary:F2}");
+            Helper.WriteOut($"Average salary expectation: {avrgSalary:F2}");
             // SHOW TOTAL OF DIFFERENT STATUS JOBS:
             foreach (var group in byStatus)
             {
-                Console.WriteLine($"{group.Status}: {group.Count}");
+                Helper.WriteOut($"{group.Status}: {group.Count}");
             }
+            Helper.CallReturnToMenu();
         }
 
         public void ShowAllInNewestOrder()
@@ -279,7 +283,7 @@ namespace JobbApplicationTracker
             Console.Clear();
             if (jobApplications.Count <= 0)
             {
-                Console.WriteLine("There are no available job applications!");
+                Helper.WriteOut("There are no available job applications!");
                 return;
             }
 
@@ -291,8 +295,9 @@ namespace JobbApplicationTracker
             // Display each job application
             foreach (JobApplication application in newestSorted)
             {
-                Console.WriteLine(application.GetSummary());
+                Helper.WriteOut(application.GetSummary());
             }
+            Helper.CallReturnToMenu();
         }
     }
 }
