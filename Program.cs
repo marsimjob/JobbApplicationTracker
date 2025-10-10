@@ -9,8 +9,6 @@
             bool running = true;
             while (running)
             {
-                Console.WriteLine();
-
                 int selected = Helper.Menu("Welcome to the JOB APPLICATION service. What do you wish to do today?", Helper.menuOptions);
 
                 switch (selected)
@@ -36,12 +34,19 @@
                     case 6: 
                         jobTracker.RemoveJob(); 
                         break;
-                    case 7: 
+                    case 7:
+                        jobTracker.ShowNonRejectJobsTwoWeeksMax();
+                        break;
+                    case 8:
+                        jobTracker.ShowOldAppliedJobsWithNoResponse();
+                        break;
+                    case 9: 
                         running = false;
                         break;
                 }
             }
 
+            Console.WriteLine();
             Helper.WriteOut("Completing program. Thank you for using our services.");
             Console.ReadLine();
         }

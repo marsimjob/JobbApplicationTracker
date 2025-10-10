@@ -74,17 +74,21 @@ namespace JobbApplicationTracker
             }
         }
 
+        // Top menu choices
         public static List<string> menuOptions = new List<string>() {
         "Add a new job application",
         "Show all job applications",
         "Filter job applications by status",
         "Sort job applications by date",
-        "Show statistics",
+        "Show job applications statistics",
         "Update status of a job application",
-        "Delete an application",
+        "Delete a job application",
+        "Show non-rejected job applications (2 weeks max)",
+        "Show unanswered job applications (2 weeks or older)",
         "Exit program"
         };
 
+        // Remove menu choices
         public static List<string> removeOptions = new List<string>() {
            "Remove a particular job application(s)",
            "Remove rejected job application(s)",
@@ -149,5 +153,32 @@ namespace JobbApplicationTracker
             Console.WriteLine($"Press ENTER to return to main menu.");
             Console.ReadLine();
         }
+
+        // Colors text depending on job status (meant to be used in foreach loops), but can be used with any text and enum Status
+        internal static void WriteWithStatusColor(string text, Status status)
+        {
+            ConsoleColor original = Console.ForegroundColor;
+
+            switch (status)
+            {
+                case Status.Offer:
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    break;
+                case Status.Reject:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case Status.Interview:
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    break;
+                case Status.Applied:
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    break;
+            }
+
+            WriteOut(text);
+
+            Console.ForegroundColor = original;
+        }
     }
+
 }
