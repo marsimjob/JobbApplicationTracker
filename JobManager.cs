@@ -334,7 +334,7 @@ namespace JobbApplicationTracker
             }
 
             // Sort job applications by ApplicationDate in descending order as a list
-            var newestSorted = jobApplications
+            List<JobApplication> newestSorted = jobApplications
                 .OrderByDescending(j => j.ApplicationDate)
                 .ToList();
 
@@ -357,7 +357,7 @@ namespace JobbApplicationTracker
 
             // Go over all jobapplications with LINQ and get a new list with jobs
             // that were applied withing the 14 days for now  AND are NOT reject status
-            var availableJob = jobApplications
+            List<JobApplication> availableJob = jobApplications
             .Where(j => j.Status != Status.Reject
             && j.ApplicationDate <= today
             && (today - j.ApplicationDate) <= twoWeeks).ToList();
@@ -370,7 +370,7 @@ namespace JobbApplicationTracker
             }
 
             // Go over the new list in a foreach loop and present it using Helper.WriteWithStatusColor()
-            foreach (var job in availableJob)
+            foreach (JobApplication job in availableJob)
             {
                 Helper.WriteWithStatusColor(job.GetSummary(), job.Status);
             }
@@ -386,8 +386,7 @@ namespace JobbApplicationTracker
             TimeSpan twoWeeks = TimeSpan.FromDays(14);
 
             // If status is Applied and no responseDate and the application is over 2 weeks old
-
-            var oldJobs= jobApplications
+            List<JobApplication> oldJobs= jobApplications
                 .Where(j =>
                     j.Status == Status.Applied // If the job has been applied to
                     && j.ResponseDate >= today // If the response date is stille active
@@ -403,7 +402,7 @@ namespace JobbApplicationTracker
                 return;
             }
 
-            foreach (var job in oldJobs)
+            foreach (JobApplication job in oldJobs)
             {
                 Helper.WriteWithStatusColor(job.GetSummary(), job.Status);
             }
