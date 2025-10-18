@@ -16,7 +16,7 @@ namespace JobbApplicationTracker
             // Selection will be presented in int
             int selected = 0;
 
-            // Set key command
+            // Set key command 
             ConsoleKeyInfo key;
 
             // Remove cursor from console
@@ -36,12 +36,12 @@ namespace JobbApplicationTracker
                     {
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
-                        Console.WriteLine($" > {options[i]}");
+                        Console.WriteLine($"    > {options[i]}");
                         Console.ResetColor();
                     }
                     else // Write it out normally
                     {
-                        Console.WriteLine($"   {options[i]}");
+                        Console.WriteLine($"  {options[i]}");
                     }
                 }
 
@@ -54,13 +54,15 @@ namespace JobbApplicationTracker
                 {
                     case ConsoleKey.UpArrow: // Move down in options.Count
                         selected--;
-                        if (selected < 0)
+                        if (selected < 0) 
+                            // Loop around to end of options array
                             selected = options.Count - 1;
                         break;
 
                     case ConsoleKey.DownArrow: // Move up in options.Count
                         selected++;
-                        if (selected >= options.Count)
+                        if (selected >= options.Count) 
+                            // Loop around to 0 if over count
                             selected = 0;
                         break;
 
